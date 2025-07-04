@@ -82,17 +82,6 @@ const Homepage = () => {
       bgcolor: 'background.default',
       color: 'text.primary'
     }}>
-      {/* Mobile App Bar */}
-      {isMobile && (
-        <AppBar position="static" color="default" elevation={1}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2 }}>
-            <Typography variant="h6">Social App</Typography>
-            <IconButton>
-              <Menu />
-            </IconButton>
-          </Box>
-        </AppBar>
-      )}
 
       {/* Main Content */}
       <Container maxWidth="lg" sx={{ 
@@ -145,6 +134,42 @@ const Homepage = () => {
                 {isDesktop && <ListItemText primary="Saved" />}
               </ListItem>
             </List>
+
+            <Typography variant="h6" sx={{ 
+              mt: 2, 
+              mb: 1, 
+              px: 2, 
+              color: 'text.secondary' ,
+              fontWeight: 'bold',
+              fontFamily: 'Roboto, sans-serif'
+            }}>
+              Your Group Shortcuts
+            </Typography>
+             <ListItem button>
+              <ListItemAvatar>
+                <Avatar src='https://randomuser.me/api/portraits' sx={{ backgroundColor: 'blue'}}/>
+              </ListItemAvatar>
+              {isDesktop && <ListItemText primary="NBA Bets" />}
+              </ListItem>
+              <ListItem button>
+              <ListItemAvatar>
+                <Avatar src='https://randomuser.me/api/portraits' sx={{ backgroundColor: 'blue'}}/>
+              </ListItemAvatar>
+              {isDesktop && <ListItemText primary="Boys of Aerox" />}
+              </ListItem>
+              <ListItem button>
+              <ListItemAvatar>
+                <Avatar src='https://randomuser.me/api/portraits' sx={{ backgroundColor: 'blue'}}/>
+              </ListItemAvatar>
+              {isDesktop && <ListItemText primary="ERR212" />}
+              </ListItem>
+              <ListItem button>
+              <ListItemAvatar>
+                <Avatar src='https://randomuser.me/api/portraits' sx={{ backgroundColor: 'blue'}}/>
+              </ListItemAvatar>
+              {isDesktop && <ListItemText primary="NU MOA Hydroid" />}
+              </ListItem>
+
           </Box>
         )}
 
@@ -353,7 +378,7 @@ const Homepage = () => {
               </Typography>
               <List>
                 {[1, 2, 3, 4, 5].map((item) => (
-                  <ListItem button key={item}>
+                  <ListItem sx={{borderRadius: 10}} button key={item}>
                     <ListItemAvatar>
                       <Avatar src={`https://randomuser.me/api/portraits/${item % 2 === 0 ? 'women' : 'men'}/${item}.jpg`} />
                     </ListItemAvatar>
