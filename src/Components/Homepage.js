@@ -19,7 +19,8 @@ import {
   Paper,
   TextField,
   Typography,
-  useTheme
+  useTheme,
+  useMediaQuery
 } from '@mui/material';
 import {
   BookmarkBorder,
@@ -31,12 +32,16 @@ import {
   Photo,
   Share,
   ThumbUp,
-  VideoCameraBack
+  VideoCameraBack,
+  Menu
 } from '@mui/icons-material';
 
 const Homepage = () => {
-  const { theme } = useTheme(); 
-  
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'md'));
+  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
+
   const posts = [
     {
       id: 1,
@@ -77,64 +82,106 @@ const Homepage = () => {
       bgcolor: 'background.default',
       color: 'text.primary'
     }}>
+      {/* Mobile App Bar */}
+      {isMobile && (
+        <AppBar position="static" color="default" elevation={1}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2 }}>
+            <Typography variant="h6">Social App</Typography>
+            <IconButton>
+              <Menu />
+            </IconButton>
+          </Box>
+        </AppBar>
+      )}
+
       {/* Main Content */}
-      <Container maxWidth="lg" sx={{ display: 'flex', pt: 3, gap: 3 }}>
-        {/* Left Sidebar */}
-        <Box sx={{ width: 250, display: { xs: 'none', md: 'block' } }}>
-          <List>
-            <ListItem button>
-              <ListItemAvatar>
-                <Avatar src="https://randomuser.me/api/portraits/men/1.jpg" />
-              </ListItemAvatar>
-              <ListItemText primary="Christian Gadon" />
-            </ListItem>
-            <ListItem button>
-              <ListItemAvatar>
-                <Avatar sx={{ bgcolor: 'primary.main' }}>
-                  <Group />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText primary="Communities" />
-            </ListItem>
-            <ListItem button>
-              <ListItemAvatar>
-                <Avatar sx={{ bgcolor: 'secondary.main' }}>
-                  <Event />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText primary="Events" />
-            </ListItem>
-            <ListItem button>
-              <ListItemAvatar>
-                <Avatar sx={{ bgcolor: 'green' }}>
-                  <BookmarkBorder />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText primary="Saved" />
-            </ListItem>
-          </List>
-        </Box>
+      <Container maxWidth="lg" sx={{ 
+        display: 'flex', 
+        pt: isMobile ? 1 : 3, 
+        gap: isMobile ? 0 : 3,
+        flexDirection: isMobile ? 'column' : 'row'
+      }}>
+        {/* Left Sidebar - Hidden on mobile, shown on tablet and desktop */}
+        {!isMobile && (
+          <Box sx={{ 
+            width: isTablet ? 200 : 250, 
+            display: { xs: 'none', sm: 'block' },
+            position: isMobile ? 'fixed' : 'static',
+            zIndex: isMobile ? 1000 : 'auto',
+            bgcolor: isMobile ? 'background.paper' : 'transparent',
+            height: isMobile ? '100vh' : 'auto',
+            left: 0,
+            top: 0
+          }}>
+            <List>
+              <ListItem button>
+                <ListItemAvatar>
+                  <Avatar src="https://randomuser.me/api/portraits/men/1.jpg" />
+                </ListItemAvatar>
+                {isDesktop && <ListItemText primary="Christian Gadon" />}
+              </ListItem>
+              <ListItem button>
+                <ListItemAvatar>
+                  <Avatar sx={{ bgcolor: 'primary.main' }}>
+                    <Group />
+                  </Avatar>
+                </ListItemAvatar>
+                {isDesktop && <ListItemText primary="Communities" />}
+              </ListItem>
+              <ListItem button>
+                <ListItemAvatar>
+                  <Avatar sx={{ bgcolor: 'secondary.main' }}>
+                    <Event />
+                  </Avatar>
+                </ListItemAvatar>
+                {isDesktop && <ListItemText primary="Events" />}
+              </ListItem>
+              <ListItem button>
+                <ListItemAvatar>
+                  <Avatar sx={{ bgcolor: 'green' }}>
+                    <BookmarkBorder />
+                  </Avatar>
+                </ListItemAvatar>
+                {isDesktop && <ListItemText primary="Saved" />}
+              </ListItem>
+            </List>
+          </Box>
+        )}
 
         {/* Main Feed */}
-        <Box sx={{ flex: 1 }}>
+        <Box sx={{ 
+          flex: 1,
+          width: '100%',
+          maxWidth: isMobile ? '100%' : '600px',
+          mx: isMobile ? 0 : 'auto'
+        }}>
           {/* Stories */}
           <Paper sx={{ 
-            p: 2, 
-            mb: 3, 
-            borderRadius: 3,
-            bgcolor: 'background.paper'
+            p: isMobile ? 1 : 2, 
+            mb: 2, 
+            borderRadius: isMobile ? 0 : 3,
+            bgcolor: 'background.paper',
+            boxShadow: isMobile ? 'none' : theme.shadows[1]
           }}>
-            <Box sx={{ display: 'flex', overflowX: 'auto', gap: 1, pb: 1 }}>
+            <Box sx={{ 
+              display: 'flex', 
+              overflowX: 'auto', 
+              gap: 1, 
+              pb: 1,
+              '&::-webkit-scrollbar': {
+                display: 'none'
+              }
+            }}>
               {stories.map(story => (
                 <Box key={story.id} sx={{ 
-                  minWidth: 120, 
+                  minWidth: isMobile ? 100 : 120, 
                   position: 'relative', 
                   borderRadius: 2, 
                   overflow: 'hidden' 
                 }}>
                   <CardMedia
                     component="img"
-                    height="200"
+                    height={isMobile ? 150 : 200}
                     image={story.image}
                     alt={story.title}
                   />
@@ -145,7 +192,9 @@ const Homepage = () => {
                       top: 8, 
                       left: 8, 
                       border: '3px solid', 
-                      borderColor: 'primary.main' 
+                      borderColor: 'primary.main',
+                      width: isMobile ? 32 : 40,
+                      height: isMobile ? 32 : 40
                     }} 
                   />
                   <Typography 
@@ -155,7 +204,8 @@ const Homepage = () => {
                       bottom: 8, 
                       left: 8, 
                       color: 'white', 
-                      fontWeight: 'bold' 
+                      fontWeight: 'bold',
+                      fontSize: isMobile ? '0.75rem' : '0.875rem'
                     }}
                   >
                     {story.title}
@@ -167,13 +217,21 @@ const Homepage = () => {
 
           {/* Create Post */}
           <Paper sx={{ 
-            p: 2, 
-            mb: 3, 
-            borderRadius: 3,
-            bgcolor: 'background.paper'
+            p: isMobile ? 1 : 2, 
+            mb: 2, 
+            borderRadius: isMobile ? 0 : 3,
+            bgcolor: 'background.paper',
+            boxShadow: isMobile ? 'none' : theme.shadows[1]
           }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <Avatar src="https://randomuser.me/api/portraits/men/1.jpg" sx={{ mr: 2 }} />
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+              <Avatar 
+                src="https://randomuser.me/api/portraits/men/1.jpg" 
+                sx={{ 
+                  mr: 1,
+                  width: isMobile ? 32 : 40,
+                  height: isMobile ? 32 : 40
+                }} 
+              />
               <TextField
                 fullWidth
                 placeholder="What's on your mind?"
@@ -188,54 +246,90 @@ const Homepage = () => {
               />
             </Box>
             <Divider />
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', pt: 1 }}>
-              <Button startIcon={<Photo sx={{ color: 'green' }} />}>Photo</Button>
-              <Button startIcon={<VideoCameraBack sx={{ color: 'red' }} />}>Video</Button>
-              <Button startIcon={<EmojiEmotions sx={{ color: 'orange' }} />}>Feeling</Button>
+            <Box sx={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              pt: 1,
+              '& .MuiButton-root': {
+                minWidth: 'auto',
+                px: isMobile ? 0.5 : 1,
+                fontSize: isMobile ? '0.75rem' : '0.875rem'
+              }
+            }}>
+              <Button startIcon={<Photo sx={{ color: 'green', fontSize: isMobile ? 'small' : 'medium' }} />}>
+                {isDesktop ? 'Photo' : ''}
+              </Button>
+              <Button startIcon={<VideoCameraBack sx={{ color: 'red', fontSize: isMobile ? 'small' : 'medium' }} />}>
+                {isDesktop ? 'Video' : ''}
+              </Button>
+              <Button startIcon={<EmojiEmotions sx={{ color: 'orange', fontSize: isMobile ? 'small' : 'medium' }} />}>
+                {isDesktop ? 'Feeling' : ''}
+              </Button>
             </Box>
           </Paper>
 
           {/* Posts */}
           {posts.map(post => (
             <Paper key={post.id} sx={{ 
-              p: 2, 
-              mb: 3, 
-              borderRadius: 3,
-              bgcolor: 'background.paper'
+              p: isMobile ? 1 : 2, 
+              mb: 2, 
+              borderRadius: isMobile ? 0 : 3,
+              bgcolor: 'background.paper',
+              boxShadow: isMobile ? 'none' : theme.shadows[1]
             }}>
               <CardHeader
-                avatar={<Avatar src={post.avatar} />}
+                avatar={<Avatar src={post.avatar} sx={{ width: isMobile ? 32 : 40, height: isMobile ? 32 : 40 }} />}
                 action={
-                  <IconButton>
-                    <MoreVert />
+                  <IconButton size={isMobile ? 'small' : 'medium'}>
+                    <MoreVert fontSize={isMobile ? 'small' : 'medium'} />
                   </IconButton>
                 }
                 title={post.author}
                 subheader={post.time}
-                sx={{ color: 'text.primary' }}
+                sx={{ 
+                  color: 'text.primary',
+                  '& .MuiCardHeader-title': {
+                    fontSize: isMobile ? '0.875rem' : '1rem'
+                  },
+                  '& .MuiCardHeader-subheader': {
+                    fontSize: isMobile ? '0.75rem' : '0.875rem'
+                  },
+                  p: isMobile ? 1 : 2
+                }}
               />
-              <CardContent>
-                <Typography variant="body1" paragraph sx={{ color: 'text.primary' }}>
+              <CardContent sx={{ p: isMobile ? 1 : 2 }}>
+                <Typography variant="body1" paragraph sx={{ 
+                  color: 'text.primary',
+                  fontSize: isMobile ? '0.875rem' : '1rem',
+                  mb: isMobile ? 1 : 2
+                }}>
                   {post.content}
                 </Typography>
                 {post.image && (
                   <CardMedia
                     component="img"
-                    height="400"
+                    height={isMobile ? 200 : 400}
                     image={post.image}
                     alt="Post content"
-                    sx={{ borderRadius: 2 }}
+                    sx={{ borderRadius: 1 }}
                   />
                 )}
               </CardContent>
-              <CardActions sx={{ justifyContent: 'space-between', px: 2 }}>
-                <Button startIcon={<ThumbUp />} sx={{ color: 'text.secondary' }}>
+              <CardActions sx={{ 
+                justifyContent: 'space-between', 
+                px: isMobile ? 1 : 2,
+                '& .MuiButton-root': {
+                  fontSize: isMobile ? '0.75rem' : '0.875rem',
+                  minWidth: 'auto'
+                }
+              }}>
+                <Button startIcon={<ThumbUp fontSize={isMobile ? 'small' : 'medium'} />} sx={{ color: 'text.secondary' }}>
                   {post.likes} Likes
                 </Button>
-                <Button startIcon={<ChatBubbleOutline />} sx={{ color: 'text.secondary' }}>
+                <Button startIcon={<ChatBubbleOutline fontSize={isMobile ? 'small' : 'medium'} />} sx={{ color: 'text.secondary' }}>
                   {post.comments} Comments
                 </Button>
-                <Button startIcon={<Share />} sx={{ color: 'text.secondary' }}>
+                <Button startIcon={<Share fontSize={isMobile ? 'small' : 'medium'} />} sx={{ color: 'text.secondary' }}>
                   {post.shares} Shares
                 </Button>
               </CardActions>
@@ -243,31 +337,36 @@ const Homepage = () => {
           ))}
         </Box>
 
-        {/* Right Sidebar */}
-        <Box sx={{ width: 300, display: { xs: 'none', lg: 'block' } }}>
-          <Paper sx={{ 
-            p: 2, 
-            borderRadius: 3,
-            bgcolor: 'background.paper'
+        {/* Right Sidebar - Hidden on mobile and tablet, shown on desktop */}
+        {isDesktop && (
+          <Box sx={{ 
+            width: 300, 
+            display: { xs: 'none', lg: 'block' }
           }}>
-            <Typography variant="h6" gutterBottom sx={{ color: 'text.primary' }}>
-              Contacts
-            </Typography>
-            <List>
-              {[1, 2, 3, 4, 5].map((item) => (
-                <ListItem button key={item}>
-                  <ListItemAvatar>
-                    <Avatar src={`https://randomuser.me/api/portraits/${item % 2 === 0 ? 'women' : 'men'}/${item}.jpg`} />
-                  </ListItemAvatar>
-                  <ListItemText 
-                    primary={`Contact ${item}`} 
-                    primaryTypographyProps={{ color: 'text.primary' }}
-                  />
-                </ListItem>
-              ))}
-            </List>
-          </Paper>
-        </Box>
+            <Paper sx={{ 
+              p: 2, 
+              borderRadius: 3,
+              bgcolor: 'background.paper'
+            }}>
+              <Typography variant="h6" gutterBottom sx={{ color: 'text.primary' }}>
+                Contacts
+              </Typography>
+              <List>
+                {[1, 2, 3, 4, 5].map((item) => (
+                  <ListItem button key={item}>
+                    <ListItemAvatar>
+                      <Avatar src={`https://randomuser.me/api/portraits/${item % 2 === 0 ? 'women' : 'men'}/${item}.jpg`} />
+                    </ListItemAvatar>
+                    <ListItemText 
+                      primary={`Contact ${item}`} 
+                      primaryTypographyProps={{ color: 'text.primary' }}
+                    />
+                  </ListItem>
+                ))}
+              </List>
+            </Paper>
+          </Box>
+        )}
       </Container>
     </Box>
   );

@@ -12,7 +12,10 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
-  Switch
+  Switch,
+  IconButton,
+  useMediaQuery,
+  useTheme as useMuiTheme
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
@@ -24,12 +27,19 @@ import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import PersonIcon from '@mui/icons-material/Person';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
-import { useTheme } from '../Theme/ThemeContext'; // Adjust the import path as necessary
+import MenuIcon from '@mui/icons-material/Menu';
+import { useTheme } from '../Theme/ThemeContext';
+import { useNavigate } from 'react-router-dom';
 
 const Navigationbar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
+  const [mobileSearch, setMobileSearch] = useState(false);
   const open = Boolean(anchorEl);
-  const { darkMode, toggleDarkMode } = useTheme(); // Now this will work
+  const { darkMode, toggleDarkMode } = useTheme();
+  const muiTheme = useMuiTheme();
+  const isMobile = useMediaQuery(muiTheme.breakpoints.down('sm'));
+  const isTablet = useMediaQuery(muiTheme.breakpoints.between('sm', 'md'));
+  const navigate = useNavigate();
 
   const handleAvatarClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -37,6 +47,15 @@ const Navigationbar = () => {
 
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleSearchToggle = () => {
+    setMobileSearch(!mobileSearch);
+  };
+
+  const handleLogout = () => {
+    // Handle logout logic here
+    navigate('/');
   };
 
   const HandleSearch = () => {
@@ -54,98 +73,170 @@ const Navigationbar = () => {
           borderBottom: theme => `1px solid ${theme.palette.divider}` 
         }}
       >
-        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant="h5" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-            BlogSocial
-          </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center', ml: 30 }}>
-            <TextField
-              size="small"
-              placeholder="Search..."
-              variant="outlined"
-              sx={{ mr: 2, width: 300 }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <i className="fas fa-search" />
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <SearchIcon
-              onClick={HandleSearch}
-              sx={{ 
-                '&:hover': { 
-                  color: 'primary.main', 
-                  cursor: 'pointer',
-                  transform: 'scale(1.1)'
-                },
-                transition: 'all 0.3s ease'
-              }}
-            />
+        <Toolbar sx={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          py: isMobile ? 1 : 0
+        }}>
+          {/* Logo/Brand */}
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center',
+            order: isMobile ? 1 : 0,
+            flexGrow: isMobile ? 1 : 0
+          }}>
+            <Typography variant="h5" sx={{ 
+              fontWeight: 'bold', 
+              color: 'primary.main',
+              fontSize: isMobile ? '1.25rem' : '1.5rem'
+            }}>
+              BlogSocial
+            </Typography>
           </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center'}}>
+
+          {/* Search Bar - Desktop/Tablet */}
+          {!isMobile && (
+            <Box sx={{ 
+              display: 'flex', 
+              alignItems: 'center',
+              flexGrow: isTablet ? 1 : 0,
+              mx: isTablet ? 2 : 0,
+              order: isMobile ? 3 : 0,
+              width: isMobile ? '100%' : 'auto',
+              mt: isMobile ? 1 : 0
+            }}>
+              <TextField
+                size="small"
+                placeholder="Search..."
+                variant="outlined"
+                sx={{ 
+                  mr: 2, 
+                  width: isTablet ? '100%' : 300 
+                }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Box>
+          )}
+
+          {/* Mobile Search Toggle */}
+          {isMobile && !mobileSearch && (
+            <IconButton
+              onClick={handleSearchToggle}
+              sx={{ order: 2 }}
+            >
+              <SearchIcon />
+            </IconButton>
+          )}
+
+          {/* Mobile Search Field */}
+          {isMobile && mobileSearch && (
+            <Box sx={{ 
+              order: 3,
+              width: '100%',
+              mt: 1
+            }}>
+              <TextField
+                fullWidth
+                size="small"
+                placeholder="Search..."
+                variant="outlined"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={handleSearchToggle}>
+                        <Typography variant="body2" color="textSecondary">
+                          Cancel
+                        </Typography>
+                      </IconButton>
+                    </InputAdornment>
+                  )
+                }}
+              />
+            </Box>
+          )}
+
+          {/* Action Icons */}
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center',
+            order: isMobile ? 2 : 0
+          }}>
+            {!isMobile && (
+              <>
+                <IconButton
+                  sx={{ 
+                    color: 'primary.main',
+                    '&:hover': { 
+                      backgroundColor: 'primary.main',
+                      color: 'white'
+                    },
+                    mr: 1
+                  }}
+                >
+                  <AddIcon />
+                </IconButton>
+                <IconButton
+                  sx={{ 
+                    color: 'primary.main',
+                    '&:hover': { 
+                      backgroundColor: 'primary.main',
+                      color: 'white'
+                    },
+                    mr: 1
+                  }}
+                >
+                  <QuestionAnswerIcon />
+                </IconButton>
+                <IconButton
+                  sx={{ 
+                    color: 'primary.main',
+                    '&:hover': { 
+                      backgroundColor: 'primary.main',
+                      color: 'white'
+                    },
+                    mr: 1
+                  }}
+                >
+                  <NotificationsIcon />
+                </IconButton>
+              </>
+            )}
+
             <Avatar
               alt="User Avatar"
               src="https://randomuser.me/api/portraits/men/1.jpg"
               sx={{ 
                 width: 40, 
                 height: 40, 
-                ml: 2, 
-                mr: 2, 
                 cursor: 'pointer', 
                 '&:hover': { transform: 'scale(1.1)' }, 
-                transition: 'all 0.3s ease' 
+                transition: 'all 0.3s ease',
+                ml: isMobile ? 1 : 0
               }}
               onClick={handleAvatarClick}
-            />   
-            <AddIcon
-              sx={{ 
-                '&:hover': { 
-                  color: 'white', 
-                  cursor: 'pointer',
-                  transform: 'scale(1.1)'
-                },
-                transition: 'all 0.3s ease',
-                backgroundColor: 'primary.main',
-                borderRadius: '50%',
-                ml: 2,
-                padding: 0.5,
-                fontSize: 30,
-                mr: 2
-              }}
             />
-            <QuestionAnswerIcon
-              sx={{ 
-                '&:hover': { 
-                  color: 'white', 
-                  cursor: 'pointer',
-                  transform: 'scale(1.1)'
-                },
-                transition: 'all 0.3s ease',
-                backgroundColor: 'primary.main',
-                borderRadius: '50%',
-                fontSize: 30,
-                padding: 0.5,
-                ml: 2,
-                mr: 2
-              }}
-            />
-            <NotificationsIcon
-              sx={{ 
-                '&:hover': { 
-                  color: 'white', 
-                  cursor: 'pointer',
-                  transform: 'scale(1.1)'
-                },
-                transition: 'all 0.3s ease',
-                backgroundColor: 'primary.main',
-                borderRadius: '50%',
-                fontSize: 30,
-                padding: 0.5,
-                ml: 2,
-              }}
-            />
+
+            {isMobile && (
+              <IconButton
+                sx={{ ml: 1 }}
+                onClick={handleAvatarClick}
+              >
+                <MenuIcon />
+              </IconButton>
+            )}
           </Box>
         </Toolbar>
       </AppBar>
@@ -191,6 +282,28 @@ const Navigationbar = () => {
           </ListItemIcon>
           <ListItemText>Profile</ListItemText>
         </MenuItem>
+        {isMobile && (
+          <>
+            <MenuItem onClick={handleClose}>
+              <ListItemIcon>
+                <AddIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>Create</ListItemText>
+            </MenuItem>
+            <MenuItem onClick={handleClose}>
+              <ListItemIcon>
+                <QuestionAnswerIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>Messages</ListItemText>
+            </MenuItem>
+            <MenuItem onClick={handleClose}>
+              <ListItemIcon>
+                <NotificationsIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>Notifications</ListItemText>
+            </MenuItem>
+          </>
+        )}
         <MenuItem onClick={handleClose}>
           <ListItemIcon>
             <SettingsIcon fontSize="small" />
@@ -211,7 +324,7 @@ const Navigationbar = () => {
           <Switch checked={darkMode} onChange={toggleDarkMode} />
         </MenuItem>
         <Divider />
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={handleClose} onClickCapture={handleLogout}>
           <ListItemIcon>
             <ExitToAppIcon fontSize="small" color="error" />
           </ListItemIcon>
