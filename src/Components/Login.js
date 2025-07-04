@@ -10,10 +10,10 @@ import {
   Link,
   TextField,
   Typography,
-  Paper,
   Avatar
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const handleSubmit = (event) => {
@@ -23,6 +23,13 @@ const Login = () => {
       email: data.get('email'),
       password: data.get('password'),
     });
+  };
+
+  const navigate = useNavigate();
+  const handleLogin = () => {
+    // Here you would typically handle authentication
+    // For now, we just navigate to the homepage
+    navigate('/home');
   };
 
   return (
@@ -55,7 +62,7 @@ const Login = () => {
           />
           <TextField
             margin="normal"
-            required
+            required sx={{ color: 'red' }}
             fullWidth
             name="password"
             label="Password"
@@ -72,6 +79,7 @@ const Login = () => {
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
+            onClick={handleLogin} // Call handleLogin on button click
           >
             Sign In
           </Button>
